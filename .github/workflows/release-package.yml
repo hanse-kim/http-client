@@ -15,7 +15,7 @@ jobs:
           node-version: '18.x'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@hanse'
-      - run: yarn
-      - run: yarn publish
+      - run: npm ci
+      - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}˝
