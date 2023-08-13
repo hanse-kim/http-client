@@ -1,33 +1,21 @@
-name: http-client package
-
+name: Publish http-client to GitHub Packages
 on:
   release:
-    types: [created]
-
+    types: [published]
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - run: yarn
-      - run: yarn publish
-
-  publish-gpr:
-    needs: build
-    runs-on: ubuntu-latest
     permissions:
-      packages: write
       contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
-          registry-url: https://npm.pkg.github.com/
+          node-version: '18.x'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@hanse'
       - run: yarn
       - run: yarn publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}˝
