@@ -1,0 +1,22 @@
+{
+  "name": "http-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hanse-kim/http-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hanse-kim/http-client/issues"
+  },
+  "homepage": "https://github.com/hanse-kim/http-client#readme",
+  "author": "Hanseul Kim <bluewood.truth@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.1.6"
+  }
+}
