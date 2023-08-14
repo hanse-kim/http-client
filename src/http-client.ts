@@ -3,36 +3,32 @@ import {
   HttpClientOptions,
   HttpClientRequest,
   HttpClientResponse,
-  HttpHeaders,
   HttpResponseStatusEnum,
   RequestOptions,
 } from './types';
 
 export class HttpClient {
-  private _baseUrl: string;
-  private _headers: HttpHeaders;
-  private _cache: RequestCache;
+  private _options: HttpClientOptions;
 
-  constructor(options?: HttpClientOptions) {
-    this._baseUrl = options?.baseUrl || '';
-    this._headers = {
-      'Content-Type': 'application/json',
-      ...options?.headers,
+  constructor(options: HttpClientOptions = {}) {
+    this._options = {
+      ...options,
+      baseUrl: options.baseUrl || '',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
     };
-    this._cache = options?.cache || 'default';
   }
 
   async request<T>({
     url,
     body,
     query,
-    cache,
     headers,
     ...request
   }: HttpClientRequest): Promise<HttpClientResponse<T>> {
-    const requestBody = JSON.stringify(body);
-
-    const requestUrl = new URL(`${this._baseUrl}${url}`);
+    const requestUrl = new URL(`${this._options.baseUrl}${url}`);
     const urlSearchParams = new URLSearchParams(
       query
         ? Object.entries(query)
@@ -42,21 +38,15 @@ export class HttpClient {
     );
     requestUrl.search = urlSearchParams.toString();
 
-    const requestHeaders = new Headers();
-    this._headers &&
-      Object.entries(this._headers).forEach(([key, value]) =>
-        requestHeaders.append(key, value)
-      );
-    headers &&
-      Object.entries(headers).forEach(([key, value]) =>
-        requestHeaders.append(key, value)
-      );
+    const requestBody = JSON.stringify(body);
+
+    const requestHeaders = { ...this._options.headers, ...headers };
 
     const response = await fetch(requestUrl, {
+      ...this._options,
       ...request,
       body: requestBody,
       headers: requestHeaders,
-      cache: this._cache || cache,
     });
 
     if (!response.ok) {
