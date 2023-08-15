@@ -53,13 +53,12 @@ export class HttpClient {
     return this._handleRequest<T>({ ...options, method: 'DELETE', url });
   }
 
-  private async _handleRequest<T>({
-    url,
-    body,
-    query,
-    headers,
-    ...request
-  }: HttpClientRequest) {
+  private async _handleRequest<T>(requestOrigin: HttpClientRequest) {
+    const request =
+      this._options.interceptors?.requestInterceptor?.(requestOrigin) ||
+      requestOrigin;
+    const { url, body, query, headers, ...fetchOptions } = request;
+
     const requestUrl = new URL(`${this._options.baseUrl}${url}`);
     const urlSearchParams = new URLSearchParams(
       query
@@ -77,7 +76,7 @@ export class HttpClient {
     return this._handleResponse<T>(
       await fetch(requestUrl, {
         ...this._options,
-        ...request,
+        ...fetchOptions,
         body: requestBody,
         headers: requestHeaders,
       })
@@ -85,23 +84,26 @@ export class HttpClient {
   }
 
   private async _handleResponse<T>(
-    response: Response
+    responseOrigin: Response
   ): Promise<HttpClientResponse<T>> {
-    if (!response.ok) {
-      const errorBody = await response.json();
+    if (!responseOrigin.ok) {
+      const errorBody = await responseOrigin.json();
 
       throw new HttpClientError({
-        message: `Fetch failed (${response.statusText})`,
-        status: response.status,
-        headers: response.headers,
+        message: `Fetch failed (${responseOrigin.statusText})`,
+        status: responseOrigin.status,
+        headers: responseOrigin.headers,
         body: errorBody,
       });
     }
 
     const data: T =
-      response.status === HttpResponseStatusEnum.NO_CONTENT
+      responseOrigin.status === HttpResponseStatusEnum.NO_CONTENT
         ? undefined
-        : await response.json();
-    return { data, ...response };
+        : await responseOrigin.json();
+    const response = { data, ...responseOrigin };
+    return (
+      this._options.interceptors?.responseInterceptor?.(response) || response
+    );
   }
 }

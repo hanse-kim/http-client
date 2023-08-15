@@ -1,5 +1,11 @@
 export type HttpClientOptions = Omit<RequestInit, 'method' | 'body'> & {
   baseUrl?: string;
+  interceptors?: {
+    requestInterceptor?: (request: HttpClientRequest) => HttpClientRequest;
+    responseInterceptor?: <T>(
+      response: HttpClientResponse<T>
+    ) => HttpClientResponse<T>;
+  };
 };
 
 export type HttpClientRequest = Omit<HttpClientOptions, 'baseUrl'> & {
@@ -13,7 +19,10 @@ type HttpRequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 type RequestBody = Record<string, unknown>;
 
-type RequestUrlQuery = Record<string, string | number | boolean | null | undefined>;
+type RequestUrlQuery = Record<
+  string,
+  string | number | boolean | null | undefined
+>;
 
 export type RequestOptions = Partial<Omit<HttpClientRequest, 'url' | 'method'>>;
 
