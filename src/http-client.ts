@@ -21,13 +21,45 @@ export class HttpClient {
     };
   }
 
-  async request<T>({
+  get<T>(url: string, options: RequestOptions = {}) {
+    return this._handleRequest<T>({ ...options, method: 'GET', url });
+  }
+
+  post<T>(
+    url: string,
+    body: HttpClientRequest['body'],
+    options: RequestOptions = {}
+  ) {
+    return this._handleRequest<T>({ ...options, method: 'POST', body, url });
+  }
+
+  put<T>(
+    url: string,
+    body: HttpClientRequest['body'],
+    options: RequestOptions = {}
+  ) {
+    return this._handleRequest<T>({ ...options, method: 'PUT', body, url });
+  }
+
+  patch<T>(
+    url: string,
+    body: HttpClientRequest['body'],
+    options: RequestOptions = {}
+  ) {
+    return this._handleRequest<T>({ ...options, method: 'PATCH', body, url });
+  }
+
+  delete<T>(url: string, options: RequestOptions = {}) {
+    return this._handleRequest<T>({ ...options, method: 'DELETE', url });
+  }
+
+  private async _handleRequest<T>({
     url,
     body,
     query,
     headers,
     ...request
-  }: HttpClientRequest): Promise<HttpClientResponse<T>> {
+  }: HttpClientRequest) {
     const requestUrl = new URL(`${this._options.baseUrl}${url}`);
     const urlSearchParams = new URLSearchParams(
       query
@@ -42,13 +74,19 @@ export class HttpClient {
 
     const requestHeaders = { ...this._options.headers, ...headers };
 
-    const response = await fetch(requestUrl, {
-      ...this._options,
-      ...request,
-      body: requestBody,
-      headers: requestHeaders,
-    });
+    return this._handleResponse<T>(
+      await fetch(requestUrl, {
+        ...this._options,
+        ...request,
+        body: requestBody,
+        headers: requestHeaders,
+      })
+    );
+  }
 
+  private async _handleResponse<T>(
+    response: Response
+  ): Promise<HttpClientResponse<T>> {
     if (!response.ok) {
       const errorBody = await response.json();
 
@@ -65,37 +103,5 @@ export class HttpClient {
         ? undefined
         : await response.json();
     return { data, ...response };
-  }
-
-  get<T>(url: string, options: RequestOptions = {}) {
-    return this.request<T>({ ...options, method: 'GET', url });
-  }
-
-  post<T>(
-    url: string,
-    body: HttpClientRequest['body'],
-    options: RequestOptions = {}
-  ) {
-    return this.request<T>({ ...options, method: 'POST', body, url });
-  }
-
-  put<T>(
-    url: string,
-    body: HttpClientRequest['body'],
-    options: RequestOptions = {}
-  ) {
-    return this.request<T>({ ...options, method: 'PUT', body, url });
-  }
-
-  patch<T>(
-    url: string,
-    body: HttpClientRequest['body'],
-    options: RequestOptions = {}
-  ) {
-    return this.request<T>({ ...options, method: 'PATCH', body, url });
-  }
-
-  delete<T>(url: string, options: RequestOptions = {}) {
-    return this.request<T>({ ...options, method: 'DELETE', url });
   }
 }
