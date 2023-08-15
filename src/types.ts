@@ -2,9 +2,9 @@ export type HttpClientOptions = Omit<RequestInit, 'method' | 'body'> & {
   baseUrl?: string;
   interceptors?: {
     requestInterceptor?: (request: HttpClientRequest) => HttpClientRequest;
-    responseInterceptor?: <T>(
-      response: HttpClientResponse<T>
-    ) => HttpClientResponse<T>;
+    responseInterceptor?: (
+      response: HttpClientResponse<any>
+    ) => HttpClientResponse<any>;
   };
 };
 
