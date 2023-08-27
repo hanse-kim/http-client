@@ -1,4 +1,7 @@
-export type HttpClientOptions = Omit<RequestInit, 'method' | 'body'> & {
+type FetchApiOptions = Omit<RequestInit, 'method' | 'body'>;
+
+/** Used when create HttpClient instance. */
+export type HttpClientOptions = FetchApiOptions & {
   baseUrl?: string;
   interceptors?: {
     requestInterceptor?: (request: HttpClientRequest) => HttpClientRequest;
@@ -8,7 +11,8 @@ export type HttpClientOptions = Omit<RequestInit, 'method' | 'body'> & {
   };
 };
 
-export type HttpClientRequest = Omit<HttpClientOptions, 'baseUrl'> & {
+/** Used in handleRequest. */
+export type HttpClientRequest = FetchApiOptions & {
   url: string;
   method: HttpRequestMethod;
   body?: RequestBody;
@@ -24,7 +28,10 @@ type RequestUrlQuery = Record<
   string | number | boolean | null | undefined
 >;
 
-export type RequestOptions = Partial<Omit<HttpClientRequest, 'url' | 'method'>>;
+/** Used in each request method. */
+export type RequestOptions = Partial<
+  Omit<HttpClientRequest, 'url' | 'method' | 'body'>
+>;
 
 export type HttpClientResponse<T> = Response & {
   data: T;
