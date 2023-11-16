@@ -8,6 +8,8 @@ import {
 } from './types';
 
 export class HttpClient {
+  static instance = new HttpClient();
+
   private _options: HttpClientOptions;
 
   constructor(options: HttpClientOptions = {}) {
