@@ -102,7 +102,12 @@ export class HttpClient {
     const data: T =
       responseOrigin.status === HttpResponseStatusEnum.NO_CONTENT
         ? undefined
-        : await responseOrigin.json();
+        : responseOrigin.headers
+            .get('Content-Type')
+            ?.toLowerCase()
+            .includes('json')
+        ? await responseOrigin.json()
+        : await responseOrigin.text();
     const response = { data, ...responseOrigin };
     return (
       this._options.interceptors?.responseInterceptor?.(response) || response
