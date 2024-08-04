@@ -1,6 +1,6 @@
 {
   "name": "@hanse-kim/http-client",
-  "version": "1.1.5",
+  "version": "1.1.7",
   "description": "",
   "type": "module",
   "main": "./dist/index.js",

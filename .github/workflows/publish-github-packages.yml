@@ -1,20 +1,27 @@
-name: Publish http-client to GitHub Packages
+name: Publish Package to GitHub Packages
 on:
   release:
     types: [published]
 jobs:
-  build:
+  publish-package:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: '18.x'
           registry-url: 'https://npm.pkg.github.com'
-      - run: yarn
-      - run: yarn publish
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Npm publish
+        run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
